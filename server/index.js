@@ -11,11 +11,16 @@ if (process.env.NODE_ENV !== 'production') {
     FRONTEND_URI = 'http://localhost:3000';
 }
 
-const express = require('express')
-const cors = require('cors')
-const cookieParser = require('cookie-parser')
-const path = require('path')
-const app = express();
+const express = require('express');
+const request = require('request');
+const cors = require('cors');
+const querystring = require('querystring');
+const cookieParser = require('cookie-parser');
+const path = require('path');
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
+const history = require('connect-history-api-fallback');
+
 
 
 
