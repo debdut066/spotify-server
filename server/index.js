@@ -21,9 +21,59 @@ const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 const history = require('connect-history-api-fallback');
 
+const generateRandomString = length => {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for(let i=0;i<length;i++){
+        text += possible.charAt(Math.floor(Math.random * possible.length));
+    }
+    return text;
+}
+
+const stateKey = 'spotify_auth_state';
 
 
+//Multi-process to utilize all CPU cores
+if(cluster.isMaster){
+    console.warn(`Node cluster master ${process.id} is running`);
 
-app.listen(process.env.PORT, ()=>{
-    console.log("server running...")
-})
+    //For workers.
+    for(let i=0;i<numCPUs;i++){
+        cluster.fork();
+    }
+
+    cluster.on('exit',(worker,code,signal)=>{
+        console.error(
+            `Node cluster worker ${worker.process.pid} exited: code ${code}, signal ${signal}`,
+        );
+    });
+}else{
+    const app = express();
+
+    //Prority server any static files.
+    app.use(express.static(path.resolve(__dirname, "../client/build")));
+
+    app
+        .use(express.cors())
+        .use(express.cookieParser())
+        .use(
+            history({
+                verbose : true,
+                rewrites: [
+                    { from: /\/login/, to: '/login' },
+                    { from: /\/callback/, to: '/callback' },
+                    { from: /\/refresh_token/, to: '/refresh_token' },
+                ], 
+            }),
+        )
+    
+    app.get('/', function (req, res) {
+        res.render(path.resolve(__dirname, '../client/build/index.html'));
+    });
+
+    
+
+    app.listen(PORT, function() {
+        console.warn(`Node cluster worker ${process.pid} : listening on port :${PORT}`);
+    });
+}
