@@ -46,7 +46,7 @@ if(cluster.isMaster){
         console.error(
             `Node cluster worker ${worker.process.pid} exited: code ${code}, signal ${signal}`,
         );
-    });
+    })
 }else{
     const app = express();
 
