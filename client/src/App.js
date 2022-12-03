@@ -1,7 +1,10 @@
+import React from 'react'
 import './App.css';
 import LoginScreen from './components/LoginScreen';
 import styled from 'styled-components';
+import Profile from './components/Profile'
 import GlobalStyle from "./styles/GlobalStyle"
+import { token } from './spotify/index'
 
 const AppContainer = styled.div`
   height: 100%;
@@ -9,10 +12,17 @@ const AppContainer = styled.div`
 `;
 
 function App() {
+  const [accessToken,setAccessToken] = React.useState('');
+  // console.log(token);
+
+  React.useEffect(()=>{
+    setAccessToken(token)
+  },[])
+
   return (
     <AppContainer>
       <GlobalStyle/>
-      <LoginScreen/>
+      {accessToken ? <Profile/> : <LoginScreen/>}
     </AppContainer>
   );
 }
