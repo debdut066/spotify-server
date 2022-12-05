@@ -32,6 +32,7 @@ const LoginButton = styled.a`
     background-color: ${colors.offGreen};
   }
 `;
+// console.log(process.env.NODE_ENV)
 
 const LOGIN_URI = process.env.NODE_ENV !== "production" ? "http://localhost:8888/login" : "https://spotify-profile.herkouapp.com/login";
 
